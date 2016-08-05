@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt" dir="ltr" itemscope itemtype="http://schema.org/Article">
+	<head>
+		<meta charset="utf-8">
+
+		<script type='text/javascript' src='jquery/jquery-2.2.4.min.js'></script>
+		<link rel='stylesheet' type='text/css' href='bootstrap/css/bootstrap.min.css'>
+		<script type='text/javascript' src='bootstrap/js/bootstrap.min.js'></script>
+
+	    <script type="text/javascript" src="/webcam.min.js"></script>
+	</head>
+	<body>
+		<div class="row col-md-6 col-md-offset-3">
+			<div class="text-center">
+				<h4>Câmera</h4>
+			    <div id="my_camera" style="width:320px; height:240px; margin: 0 auto;"></div>
+			    <h4>Última Foto</h4>
+			    <div id="my_result" style="margin: 2%;">
+			    	<img src="#" />
+			    </div>
+		    </div>
+
+		    <div class="text-center">
+			    <div class="form-group">
+			    	<label for="exampleInputEmail1">Digite seu CPF (sem pontos/traços)</label>
+				    <input class="text-center form-control col-md-offset-4" type="text" id="cpf" name="cpf" maxlength="11" placeholder="Digite o CPF" style="width: 33%;" autofocus onkeypress="return runScript(event)" />
+			    </div>
+			    <div class="form-group">
+			    	<button class="btn btn-primary" id="sendBtn" onclick="javascript:void(validaCpfSalvaImg())">Valida CPF e Salva Imagem</button>
+		    	</div>
+			</div>
+		</div>
+
+	    <script language="JavaScript">
+	        Webcam.attach( '#my_camera' );
+
+	        function runScript(e) {
+			    if (e.keyCode == 13) {
+			        var tb = document.getElementById("sendBtn");
+			        tb.click();
+			        return false;
+			    }
+			}
+
+	        function validaCpfSalvaImg(){
+	        	var cpf = document.getElementById("cpf").value;
+	        	if (!TestaCPF(cpf)){
+	        		alert("CPF Inválido!");
+	        		return false;
+	        	}
+
+	        	Webcam.snap( function(data_uri) {
+	                document.getElementById('my_result').innerHTML = '<img id="foto-save" src="'+data_uri+'"/>';
+	            });
+
+	        	var img = document.getElementById("foto-save");
+                var link = document.createElement("a");
+
+			    link.setAttribute("href", img.src);
+			    link.setAttribute("download", cpf+".jpg");
+			    link.click();
+			    document.getElementById("cpf").value = "";
+	        }
+
+	        function TestaCPF(strCPF) {
+			    var soma;
+			    var resto;
+			    soma = 0;
+				if (strCPF == "00000000000") return false;
+			    
+				for (i=1; i<=9; i++) 
+					soma = soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+				resto = (soma * 10) % 11;
+				
+			    if ((resto == 10) || (resto == 11))  
+			    	resto = 0;
+			    if (resto != parseInt(strCPF.substring(9, 10)) ) 
+			    	return false;
+				
+				soma = 0;
+			    for (i = 1; i <= 10; i++) 
+			    	soma = soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+			    resto = (soma * 10) % 11;
+				
+			    if ((resto == 10) || (resto == 11))
+			    	resto = 0;
+			    if (resto != parseInt(strCPF.substring(10, 11) ) )
+			    	return false;
+
+			    return true;
+			}
+	    </script>
+
+	</body>
+</html>
